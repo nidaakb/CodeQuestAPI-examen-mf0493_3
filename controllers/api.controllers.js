@@ -23,7 +23,7 @@ const { generateQuestions, getRandomQuestionsDB } = require('../services/questio
  */
 const getRandomQuestions = async (req, res) => {
 	try {
-		let { amount } = req.query;
+		let { amount, difficulty } = req.query;
 		amount = parseInt(amount, 10);
 
 		//validation of amount
@@ -33,7 +33,14 @@ const getRandomQuestions = async (req, res) => {
 			amount = 30;
 		}
 
-		const randomQuestion = await getRandomQuestionsDB(amount);
+		// Implementing difficutly feature
+
+		let filter = {};
+		if(difficulty) {
+			filter.difficulty = difficulty;
+		};
+
+		const randomQuestion = await getRandomQuestionsDB(amount, filter);
 		
 
 		res.status(200).json({
@@ -43,6 +50,7 @@ const getRandomQuestions = async (req, res) => {
 	} catch (error) {
 		res.status(500).json({
 			message: "Error fetching random questions",
+			error: error.message || error,
 		});
 	}
 };
